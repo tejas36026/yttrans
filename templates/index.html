@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Summarizer</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #d32f2f; } /* YouTube Red */
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"] {
+            width: calc(100% - 22px); /* Adjust for padding and border */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #d32f2f;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background-color: #b71c1c; }
+        .summary-box, .error-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .summary-box { background-color: #e8f5e9; border: 1px solid #a5d6a7; }
+        .error-box { background-color: #ffebee; border: 1px solid #ef9a9a; color: #c62828; }
+        h2 { margin-top: 0; }
+        textarea {
+            width: calc(100% - 22px); /* Adjust for padding and border */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            min-height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Video Summarizer</h1>
+
+        <!-- Updated form action to use url_for for the Flask route -->
+        <form method="POST" action="{{ url_for('summarize_video') }}">
+            <label for="video_url">Enter YouTube Video URL:</label>
+            <input type="text" id="video_url" name="video_url"
+                   value="{{ video_url_input if video_url_input else '' }}"
+                   placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ" required>
+            <button type="submit">Get Summary</button>
+        </form>
+
+        {% if error_message %}
+            <div class="error-box">
+                <h2>Error</h2>
+                <p>{{ error_message }}</p>
+            </div>
+        {% endif %}
+
+        {% if summary %}
+            <div class="summary-box">
+                <h2>Summary (First ~150 words of transcript):</h2>
+                <textarea readonly>{{ summary }}</textarea>
+            </div>
+        {% endif %}
+
+        {% if full_transcript and not summary and not error_message %} {# Show full transcript if summary logic failed (e.g. transcript too short) but transcript was fetched #}
+             <div class="summary-box">
+                <h2>Full Transcript:</h2>
+                <textarea readonly>{{ full_transcript }}</textarea>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
